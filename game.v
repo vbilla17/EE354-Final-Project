@@ -2,20 +2,16 @@ module Game
     (
     input clk,
     input reset,
-    input start,
+    input start_btn,
+    input win,
+    input lose,
     output q_start,
     output q_playing,
-    output q_game_over,
+    output q_lose,
     output q_win,
-    )
-
-    // Inputs
-        input clk;
-        input reset;
-        input start;
+    );
 
     // Outputs
-        output q_start, q_playing, q_lose, q_win;
         reg [3:0] state;
         assign {q_start, q_playing, q_lose, q_win} = state;
 
@@ -35,7 +31,7 @@ module Game
                 begin
                     case (state)
                         START:
-                            if (start)
+                            if (start_btn)
                                 state <= PLAYING;
                         PLAYING:
                             if (win)
@@ -43,10 +39,10 @@ module Game
                             else if (lose)
                                 state <= LOSE;
                         LOSE:
-                            if (start)
+                            if (start_btn)
                                 state <= START;
                         WIN:
-                            if (start)
+                            if (start_btn)
                                 state <= START;
                     endcase
                 end

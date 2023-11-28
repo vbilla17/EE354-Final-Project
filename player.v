@@ -1,72 +1,56 @@
-module Player
-    (clk,
-    reset,
-    btn_left,
-    btn_right,
-    btn_shoot,
-    win,
-    lose,
-    player_x,
-    player_y,
-    fire
-    )
+module Player (
+    input clk,
+    input reset,
+    input start,
+    input btn_left,
+    input btn_right,
+    output reg [9:0] player_h,
+    output reg [9:0] player_v
+);
 
-    // Inputs
-        input clk;
-        input reset;
-        input btn_left;
-        input btn_right;
-        input btn_shoot;
+// Set 1-hot state encoding
+localparam INIT  = 4'b0001,
+            IDLE  = 4'b0010,
+            RIGHT = 4'b0100,
+            LEFT  = 4'b1000;
 
-    // Outputs
-        output [9:0] player_x;
-        output [9:0] player_y;
-        output fire;
+reg [3:0] state;
 
-    // Local signals
-        reg [9:0] player_x;
-        reg [9:0] player_y;
-        reg fire;
-
-    // Set 1-hot state encoding
-        localparam
-            INIT           =   5'b00001,
-            IDLE           =   5'b00010,
-            RIGHT          =   5'b00100,
-            LEFT           =   5'b01000,
-            SHOOT          =   5'b10000;
-
-    // Logic
-        always @(posedge clk, posedge reset)
-        begin
-            if (reset)
-                state <= INIT;
-            else
+// Logic
+always @(posedge clk or posedge reset)
+begin
+    if (reset)
+    begin
+        state <= INIT;
+        player_h <= 10'b0000000000;
+        player_v <= 10'b0000000000;
+    end
+    else if (start)
+        state <= INIT;
+    else
+    begin
+        case (state)
+            INIT:
+                player_h <= 10'b0001100011;
+                player_v <= 10'b0000110011;
+                state <= IDLE;
+            IDLE:
+                if (btn_right)
                 begin
-                    case (state)
-                        INIT:
-                            player_x <= 0;
-                            player_y <= 0;
-                            state <= IDLE;
-                        IDLE:
-                            fire <= 0;
-                            if (btn_shoot)
-                                state <= SHOOT;
-                            else if (btn_right)
-                                state <= RIGHT;
-                            else if (btn_left)
-                                state <= LEFT;
-                        RIGHT:
-                            player_x <= player_x + 15;
-                            state <= IDLE;
-                        LEFT:
-                            player_x <= player_x - 15;
-                            state <= IDLE;
-                        SHOOT:
-                            fire <= 1;
-                            state <= IDLE;
-                    endcase
+                    player_h <= player_h + 50;
+                    state <= RIGHT;
                 end
-
+                else if (btn_left)
+                begin
+                    player_h <= player_h - 50;
+                    state <= LEFT;
+                end
+            RIGHT:
+                state <= IDLE;
+            LEFT:
+                state <= IDLE;
+        endcase
+    end
+end
 
 endmodule

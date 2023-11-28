@@ -1,67 +1,59 @@
-module Projectile
-    (
-    clk,
-    reset,
-    btn_shoot,
-    player_h,
-    collision,
-    out_of_bounds
-    projectile_h,
-    projectile_v,
-    projectile_idle
-    )
+module Projectile (
+    input clk,
+    input reset,
+    input btn_shoot,
+    input [9:0] player_h,
+    input collision,
+    output reg [9:0] projectile_h,
+    output reg [9:0] projectile_v,
+    output reg projectile_idle
+);
 
-    // Inputs
-        input clk;
-        input reset;
-        input btn_shoot;
-        input [9:0] player_h;
+// 1-hot state encoding
+localparam IDLE       = 4'b0001,
+            FIRING     = 4'b0010,
+            HIT_TARGET = 4'b0100,
+            OOB        = 4'b1000;
 
-    // Outputs
-        output [9:0] projectile_h;
-        output [9:0] projectile_v;
-        output projectile_idle;
+// State register
+reg [3:0] state;
 
-    // Local signals
-        reg [9:0] projectile_h;
-        reg [9:0] projectile_v;
-        reg projectile_idle;
-
-    // Set 1-hot state encoding
-        localparam
-            IDLE           =   4'b0001,
-            FIRING         =   4'b0010,
-            HIT_TARGET     =   4'b0100,
-            OOB            =   4'b1000;
-
-    // Logic
-        always @(posedge clk, posedge reset)
-        begin
-            if (reset)
-                state <= IDLE;
-            else
+// Logic
+always @(posedge clk or posedge reset)
+begin
+    if (reset)
+    begin
+        state <= IDLE;
+        projectile_idle <= 1;
+    end
+    else
+    begin
+        case (state)
+            IDLE:
+                projectile_h <= player_h;
+                projectile_v <= player_v;
+                if (btn_shoot)
                 begin
-                    case (state)
-                        IDLE:
-                            projectile_h <= player_h;
-                            projectile_v <= player_v;
-                            projectile_idle <= 1;
-                            if (btn_shoot)
-                                state <= SHOOT;
-                        FIRING:
-                            projectile_v <= projectile_v + 10;
-                            projectile_idle <= 0;
-                            if (collision)
-                                state <= HIT_TARGET;
-                            else if (out_of_bounds)
-                                state <= OOB;
-                        HIT_TARGET:
-                            projectile_idle <= 1;
-                            if (btn_shoot)
-                                state <= IDLE;
-                        OOB:
-                            projectile_idle <= 1;
-                            state <= IDLE;
-                    endcase
+                    state <= FIRING;
+                    projectile_idle <= 0;
                 end
-        end
+            FIRING:
+                projectile_v <= projectile_v + 10;
+                if (collision)
+                begin
+                    state <= HIT_TARGET;
+                    projectile_idle <= 1;
+                end
+                else if (projectile_v > 524)
+                begin
+                    state <= OOB;
+                    projectile_idle <= 1;
+                end
+            HIT_TARGET, OOB:
+                state <= IDLE;
+                projectile_idle <= 1;
+        endcase
+    end
+end
+
+endmodule
