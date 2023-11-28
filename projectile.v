@@ -1,3 +1,4 @@
+`timescale 1ns / 1ps
 module Projectile (
     input clk,
     input reset,
@@ -30,14 +31,17 @@ begin
     begin
         case (state)
             IDLE:
+            begin
                 projectile_h <= player_h;
-                projectile_v <= player_v;
+                projectile_v <= 10'd75;;
                 if (btn_shoot)
                 begin
                     state <= FIRING;
                     projectile_idle <= 0;
                 end
+            end
             FIRING:
+            begin
                 projectile_v <= projectile_v + 10;
                 if (collision)
                 begin
@@ -49,9 +53,12 @@ begin
                     state <= OOB;
                     projectile_idle <= 1;
                 end
+            end
             HIT_TARGET, OOB:
+            begin
                 state <= IDLE;
                 projectile_idle <= 1;
+            end
         endcase
     end
 end

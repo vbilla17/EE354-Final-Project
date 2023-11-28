@@ -1,3 +1,4 @@
+`timescale 1ns / 1ps
 module Game
     (
     input clk,
@@ -8,7 +9,7 @@ module Game
     output q_start,
     output q_playing,
     output q_lose,
-    output q_win,
+    output q_win
     );
 
     // Outputs
@@ -47,5 +48,5 @@ module Game
                     endcase
                 end
         end
-
+endmodule
 

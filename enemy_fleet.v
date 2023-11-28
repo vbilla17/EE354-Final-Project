@@ -1,3 +1,4 @@
+`timescale 1ns / 1ps
 module EnemyFleet (
     input clk,
     input reset,
@@ -22,6 +23,16 @@ reg prev_enemy1_hit;
 reg prev_enemy2_hit;
 reg prev_enemy3_hit;
 
+// Wires to connect hit signals from Enemy instances
+wire enemy1_hit_from_enemy;
+wire enemy2_hit_from_enemy;
+wire enemy3_hit_from_enemy;
+
+// Wires to track enemy hits within the module
+wire enemy1_hit_internal;
+wire enemy2_hit_internal;
+wire enemy3_hit_internal;
+
 // 1-hot state encoding
 localparam INIT       = 5'b00001,
             IDLE       = 5'b00010,
@@ -42,19 +53,24 @@ end
 Enemy enemy1(.clk(clk), .reset(reset), .start(start),
              .enemy_h(enemy_h), .enemy_v(enemy_v),
              .projectile_h(projectile_h), .projectile_v(projectile_v),
-             .hit(enemy1_hit));
-// Instantiate enemy 2 at same vertical value, 150 pixels to the right
+             .hit(enemy1_hit_from_enemy));
+// Instantiate enemy 2 at the same vertical value, 150 pixels to the right
 Enemy enemy2(.clk(clk), .reset(reset), .start(start),
-             .enemy_h(enemy_h + 150), .enemy_v(enemy_v),
+             .enemy_h(enemy_h + 10'd150), .enemy_v(enemy_v),
              .projectile_h(projectile_h), .projectile_v(projectile_v),
-             .hit(enemy2_hit));
-// Instantiate enemy 3 at same vertical value, 150 pixels to the right
+             .hit(enemy2_hit_from_enemy));
+// Instantiate enemy 3 at the same vertical value, 150 pixels to the right
 Enemy enemy3(.clk(clk), .reset(reset), .start(start),
-             .enemy_h(enemy_h + 300), .enemy_v(enemy_v),
+             .enemy_h(enemy_h + 10'd300), .enemy_v(enemy_v),
              .projectile_h(projectile_h), .projectile_v(projectile_v),
-             .hit(enemy3_hit));
+             .hit(enemy3_hit_from_enemy));
 
-// Logic
+// Connect hit signals from Enemy instances to internal signals
+assign enemy1_hit_internal = enemy1_hit_from_enemy;
+assign enemy2_hit_internal = enemy2_hit_from_enemy;
+assign enemy3_hit_internal = enemy3_hit_from_enemy;
+
+// Logic (rest of your module remains the same)
 always @(posedge clk or posedge reset)
 begin
     if (reset)
@@ -100,23 +116,23 @@ begin
                         state <= MOVE_DOWN;
                     end
                 end
-                else if (enemy1_hit && enemy2_hit && enemy3_hit)
+                else if (enemy1_hit_internal && enemy2_hit_internal && enemy3_hit_internal)
                     win <= 1;
                 else if (enemy_v <= 10'd50)
                     lose <= 1;
             MOVE_RIGHT:
                 begin
-                    enemy_h <= enemy_h + 50;
+                    enemy_h <= enemy_h + 10'd50;
                     state <= IDLE;
                 end
             MOVE_LEFT:
                 begin
-                    enemy_h <= enemy_h - 50;
+                    enemy_h <= enemy_h - 10'd50;
                     state <= IDLE;
                 end
             MOVE_DOWN:
                 begin
-                    enemy_v <= enemy_v - 50;
+                    enemy_v <= enemy_v - 10'd50;
                     state <= IDLE;
                 end
         endcase

@@ -1,3 +1,4 @@
+`timescale 1ns / 1ps
 module Player (
     input clk,
     input reset,
@@ -19,21 +20,17 @@ reg [3:0] state;
 // Logic
 always @(posedge clk or posedge reset)
 begin
-    if (reset)
-    begin
-        state <= INIT;
-        player_h <= 10'b0000000000;
-        player_v <= 10'b0000000000;
-    end
-    else if (start)
+    if (reset || start)
         state <= INIT;
     else
     begin
         case (state)
             INIT:
-                player_h <= 10'b0001100011;
-                player_v <= 10'b0000110011;
+            begin
+                player_h <= 10'd399;
+                player_v <= 10'd75;
                 state <= IDLE;
+            end
             IDLE:
                 if (btn_right)
                 begin

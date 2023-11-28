@@ -34,12 +34,14 @@ begin
                     projectile_v >= enemy_v - 25 && projectile_v <= enemy_v + 25)
                     state <= HIT;
             HIT:
+            begin
                 hit <= 1;
                 if (start)
                 begin
                     state <= IDLE;
                     hit <= 0;
                 end
+            end
         endcase
     end
 end
