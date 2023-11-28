@@ -17,9 +17,9 @@ localparam INIT = 3'b001,
 reg [2:0] state;
 
 // Logic
-always @(posedge clk or posedge reset)
+always @(posedge clk, posedge reset)
 begin
-    if (reset || start)
+    if (reset)
     begin
         state <= INIT;
     end
@@ -29,19 +29,22 @@ begin
             INIT:
                 hit <= 0;
             IDLE:
-                // If projectile is within 25 pixels of enemy, hit
-                if (projectile_h >= enemy_h - 25 && projectile_h <= enemy_h + 25 &&
-                    projectile_v >= enemy_v - 25 && projectile_v <= enemy_v + 25)
-                    state <= HIT;
-            HIT:
-            begin
-                hit <= 1;
-                if (start)
                 begin
-                    state <= IDLE;
                     hit <= 0;
+                    // If projectile is within 25 pixels of enemy, hit
+                    if (projectile_h >= enemy_h - 10'd25 && projectile_h <= enemy_h + 10'd25)
+                        if (projectile_v >= enemy_v - 10'd25 && projectile_v <= enemy_v + 10'd25)
+                            state <= HIT;
                 end
-            end
+            HIT:
+                begin
+                    hit <= 1;
+                    if (start)
+                    begin
+                        state <= IDLE;
+                        hit <= 0;
+                    end
+                end
         endcase
     end
 end

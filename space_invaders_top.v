@@ -3,7 +3,7 @@
 module space_invaders_top
     (
     input ClkPort, // 100 MHzIncoming clock signal
-    input BtnL, BtnC, BtnR, // Buttons to provide user input
+    input BtnL, BtnC, BtnR, BtnU,// Buttons to provide user input
 
 	//VGA signal
 	output hSync, vSync,
@@ -14,6 +14,8 @@ module space_invaders_top
     //SSD signal 
 	output An0, An1, An2, An3, An4, An5, An6, An7,
 	output Ca, Cb, Cc, Cd, Ce, Cf, Cg, Dp
+
+    // LED signals
     );
 
     // disable mamory ports
@@ -37,7 +39,7 @@ module space_invaders_top
         wire [3:0] anode;
 
     // Assign reset
-        assign reset = BtnC;
+        assign reset = BtnU;
 
 
     // Assign RGB signals
@@ -85,6 +87,7 @@ module space_invaders_top
         Projectile projectile(
             .clk(ClkPort),
             .reset(reset),
+            .start(game_start),
             .btn_shoot(BtnC_SCEN),
             .player_h(player_h),
             .collision(collision),
@@ -150,13 +153,44 @@ module space_invaders_top
 // SSD (Seven Segment Display)
 	// reg [3:0]	SSD;
 	// wire [3:0]	SSD3, SSD2, SSD1, SSD0;
+
+    reg [3:0] BtnC_SCEN_counter;
+    reg [3:0] BtnL_SCEN_counter;
+    reg [3:0] BtnR_SCEN_counter;
+
+    // Listen to BtnC_SCEN to start the game and display the button press on the SSD1
+    always @ (posedge ClkPort, posedge reset)
+    begin
+        if (reset)
+            BtnC_SCEN_counter <= 4'b0000;
+        else if (BtnC_SCEN)
+            BtnC_SCEN_counter <= BtnC_SCEN_counter + 1'b1;
+    end
+
+    // Listen to BtnL_SCEN to move the player left and display the button press on the SSD2
+    always @ (posedge ClkPort, posedge reset)
+    begin
+        if (reset)
+            BtnL_SCEN_counter <= 4'b0000;
+        else if (BtnL_SCEN)
+            BtnL_SCEN_counter <= BtnL_SCEN_counter + 1'b1;
+    end
+
+    // Listen to BtnR_SCEN to move the player right and display the button press on the SSD3
+    always @ (posedge ClkPort, posedge reset)
+    begin
+        if (reset)
+            BtnR_SCEN_counter <= 4'b0000;
+        else if (BtnR_SCEN)
+            BtnR_SCEN_counter <= BtnR_SCEN_counter + 1'b1;
+    end
 	
 	//SSDs display 
 	//to show how we can interface our "game" module with the SSD's, we output the 12-bit rgb background value to the SSD's
-	assign SSD3 = 4'b0000;
-	assign SSD2 = 4'b0000;
-	assign SSD1 = 4'b0000;
-	assign SSD0 = {game_start, game_playing, game_lose, game_win};
+	assign SSD3 = BtnL_SCEN_counter;
+	assign SSD2 = BtnC_SCEN_counter;
+	assign SSD1 = BtnR_SCEN_counter;
+	assign SSD0 = {game_lose, game_win, game_playing, game_start};
 
 
 	// need a scan clk for the seven segment display 

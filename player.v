@@ -18,7 +18,7 @@ localparam INIT  = 4'b0001,
 reg [3:0] state;
 
 // Logic
-always @(posedge clk or posedge reset)
+always @(posedge clk, posedge reset)
 begin
     if (reset || start)
         state <= INIT;
@@ -28,24 +28,26 @@ begin
             INIT:
             begin
                 player_h <= 10'd399;
-                player_v <= 10'd75;
+                player_v <= 10'd475;
                 state <= IDLE;
             end
             IDLE:
                 if (btn_right)
-                begin
-                    player_h <= player_h + 50;
-                    state <= RIGHT;
-                end
+                        state <= RIGHT;
                 else if (btn_left)
-                begin
-                    player_h <= player_h - 50;
                     state <= LEFT;
-                end
             RIGHT:
-                state <= IDLE;
+                begin
+                    if (player_h < 10'd749)
+                        player_h <= player_h + 10'd50;
+                    state <= IDLE;
+                end
             LEFT:
-                state <= IDLE;
+                begin
+                    if (player_h > 10'd50)
+                        player_h <= player_h - 10'd50;
+                    state <= IDLE;
+                end
         endcase
     end
 end

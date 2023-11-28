@@ -18,10 +18,10 @@ module Game
 
     // Set 1-hot state encoding
         localparam
-            START     =  4'b0001,
-            PLAYING   =  4'b0010,
-            LOSE      =  4'b0100,
-            WIN       =  4'b1000;
+            WIN     =  4'b0001,
+            LOSE   =  4'b0010,
+            PLAYING      =  4'b0100,
+            START       =  4'b1000;
 
     // Logic
         always @(posedge clk, posedge reset)
