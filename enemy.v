@@ -32,8 +32,8 @@ begin
                 begin
                     hit <= 0;
                     // If projectile is within 25 pixels of enemy, hit
-                    if (projectile_h >= enemy_h - 10'd25 && projectile_h <= enemy_h + 10'd25)
-                        if (projectile_v >= enemy_v - 10'd25 && projectile_v <= enemy_v + 10'd25)
+                    if (projectile_h >= enemy_h - 10'd50 && projectile_h <= enemy_h + 10'd50)
+                        if (projectile_v >= enemy_v - 10'd50 && projectile_v <= enemy_v + 10'd50)
                             state <= HIT;
                 end
             HIT:

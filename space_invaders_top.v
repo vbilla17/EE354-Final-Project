@@ -13,9 +13,10 @@ module space_invaders_top
 
     //SSD signal 
 	output An0, An1, An2, An3, An4, An5, An6, An7,
-	output Ca, Cb, Cc, Cd, Ce, Cf, Cg, Dp
+	output Ca, Cb, Cc, Cd, Ce, Cf, Cg, Dp,
 
     // LED signals
+    output Ld0, Ld1, Ld2, Ld3
     );
 
     // disable mamory ports
@@ -104,7 +105,17 @@ module space_invaders_top
             .projectile_h(projectile_h),
             .projectile_v(projectile_v),
             .enemy_h(enemy_h),
+            .enemy_v(enemy_v));
+
+    // Instantiate collision module
+        Collisions collision(
+            .clk(ClkPort),
+            .reset(reset),
+            .start(game_start),
+            .enemy_h(enemy_h),
             .enemy_v(enemy_v),
+            .projectile_h(projectile_h),
+            .projectile_v(projectile_v),
             .enemy1_hit(enemy1_hit),
             .enemy2_hit(enemy2_hit),
             .enemy3_hit(enemy3_hit),
@@ -259,5 +270,11 @@ module space_invaders_top
 	
 	// reg [7:0]  SSD_CATHODES;
 	assign {Ca, Cb, Cc, Cd, Ce, Cf, Cg, Dp} = {SSD_CATHODES};
+
+    // Assign output of collisions to LEDs
+    assign Led0 = collision;
+    assign Led1 = enemy1_hit;
+    assign Led2 = enemy2_hit;
+    assign Led3 = enemy3_hit;
 
 endmodule
