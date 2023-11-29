@@ -6,47 +6,53 @@ module Game
     input start_btn,
     input win,
     input lose,
-    output q_start,
-    output q_playing,
-    output q_lose,
-    output q_win
+    output reg q_start,
+    output reg q_playing,
+    output reg q_lose,
+    output reg q_win
     );
 
-    // Outputs
-        reg [3:0] state;
-        assign {q_start, q_playing, q_lose, q_win} = state;
+    // State encoding
+    localparam
+        WIN     =  4'b0001,
+        LOSE    =  4'b0010,
+        PLAYING =  4'b0100,
+        START   =  4'b1000;
 
-    // Set 1-hot state encoding
-        localparam
-            WIN     =  4'b0001,
-            LOSE   =  4'b0010,
-            PLAYING      =  4'b0100,
-            START       =  4'b1000;
+    // State register
+    reg [3:0] state;
 
     // Logic
-        always @(posedge clk, posedge reset)
+    always @(posedge clk or posedge reset)
+    begin
+        if (reset)
+            state <= START;
+        else
         begin
-            if (reset)
-                state <= START;
-            else
-                begin
-                    case (state)
-                        START:
-                            if (start_btn)
-                                state <= PLAYING;
-                        PLAYING:
-                            if (win)
-                                state <= WIN;
-                            else if (lose)
-                                state <= LOSE;
-                        LOSE:
-                            if (start_btn)
-                                state <= START;
-                        WIN:
-                            if (start_btn)
-                                state <= START;
-                    endcase
-                end
+            case (state)
+                START:
+                    if (start_btn)
+                        state <= PLAYING;
+                PLAYING:
+                    begin
+                        if (win)
+                            state <= WIN;
+                        else if (lose)
+                            state <= LOSE;
+                    end
+                LOSE:
+                    if (start_btn)
+                        state <= START;
+                WIN:
+                    if (start_btn)
+                        state <= START;
+            endcase
         end
-endmodule
 
+        // Update output registers based on state
+        q_start = (state == START);
+        q_playing = (state == PLAYING);
+        q_lose = (state == LOSE);
+        q_win = (state == WIN);
+    end
+endmodule

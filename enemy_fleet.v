@@ -3,6 +3,7 @@ module EnemyFleet (
     input clk,
     input reset,
     input start,
+    input playing,
     input [9:0] projectile_h,
     input [9:0] projectile_v,
     output reg [9:0] enemy_h,
@@ -30,26 +31,10 @@ begin
         counter <= counter + 1'b1;
 end
 
-// // Instantiate enemy modules
-// Enemy enemy1(.clk(clk), .reset(reset), .start(start),
-//              .enemy_h(enemy_h), .enemy_v(enemy_v),
-//              .projectile_h(projectile_h), .projectile_v(projectile_v),
-//              .hit(enemy1_hit_internal));
-// // Instantiate enemy 2 at the same vertical value, 150 pixels to the right
-// Enemy enemy2(.clk(clk), .reset(reset), .start(start),
-//              .enemy_h(enemy_h + 10'd150), .enemy_v(enemy_v),
-//              .projectile_h(projectile_h), .projectile_v(projectile_v),
-//              .hit(enemy2_hit_internal));
-// // Instantiate enemy 3 at the same vertical value, 150 pixels to the right
-// Enemy enemy3(.clk(clk), .reset(reset), .start(start),
-//              .enemy_h(enemy_h + 10'd300), .enemy_v(enemy_v),
-//              .projectile_h(projectile_h), .projectile_v(projectile_v),
-//              .hit(enemy2_hit_internal));
-
 // Logic (rest of your module remains the same)
 always @(posedge clk, posedge reset)
 begin
-    if (reset)
+    if (reset || start)
         state <= INIT;
     else
     begin
@@ -59,7 +44,7 @@ begin
                     enemy_h <= 10'd175;
                     enemy_v <= 10'd65;
                     moving_right <= 1;
-                    if (start)
+                    if (playing)
                         state <= IDLE;
                 end
             IDLE:

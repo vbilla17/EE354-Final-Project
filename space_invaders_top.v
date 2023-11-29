@@ -102,6 +102,7 @@ module space_invaders_top
             .clk(ClkPort),
             .reset(reset),
             .start(game_start),
+            .playing(game_playing),
             .projectile_h(projectile_h),
             .projectile_v(projectile_v),
             .enemy_h(enemy_h),
