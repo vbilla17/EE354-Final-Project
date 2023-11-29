@@ -54,7 +54,7 @@ module Collisions
             enemy3_hit <= 0;
     end
 
-    // Constant signals for when enemy is hit for graphics module
+    // Temporary signals to store previous hit signals
     reg prev_enemy1_hit;
     reg prev_enemy2_hit;
     reg prev_enemy3_hit;
@@ -63,42 +63,42 @@ module Collisions
     always @(posedge clk or posedge reset or posedge start)
     begin
         if (reset || start)
-        begin
-            collision <= 0;
-            prev_enemy1_hit <= 0;
-            prev_enemy2_hit <= 0;
-            prev_enemy3_hit <= 0;
-            win <= 0;
-            lose <= 0;
-        end
-        else
-        begin
-            // Update previous hit signals
-            prev_enemy1_hit <= enemy1_hit;
-            prev_enemy2_hit <= enemy2_hit;
-            prev_enemy3_hit <= enemy3_hit;
-
-            // Check for collision
-            if (enemy1_hit || enemy2_hit || enemy3_hit ||
-                (prev_enemy1_hit && !enemy1_hit) || 
-                (prev_enemy2_hit && !enemy2_hit) || 
-                (prev_enemy3_hit && !enemy3_hit))
-                collision <= 1;
-            else
+            begin
                 collision <= 0;
-
-            // Calculate win signal
-            if (enemy1_hit && enemy2_hit && enemy3_hit)
-                win <= 1;
-            else
+                prev_enemy1_hit <= 0;
+                prev_enemy2_hit <= 0;
+                prev_enemy3_hit <= 0;
                 win <= 0;
-
-            // Calculate lose signal
-            if (enemy_v >= 10'd475)
-                lose <= 1;
-            else
                 lose <= 0;
-        end
+            end
+        else
+            begin
+                // Update previous hit signals
+                prev_enemy1_hit <= enemy1_hit;
+                prev_enemy2_hit <= enemy2_hit;
+                prev_enemy3_hit <= enemy3_hit;
+
+                // Check for collision
+                if (enemy1_hit || enemy2_hit || enemy3_hit ||
+                    (prev_enemy1_hit && !enemy1_hit) ||
+                    (prev_enemy2_hit && !enemy2_hit) ||
+                    (prev_enemy3_hit && !enemy3_hit))
+                    collision <= 1;
+                else
+                    collision <= 0;
+
+                // Calculate win signal
+                if (enemy1_hit && enemy2_hit && enemy3_hit)
+                    win <= 1;
+                else
+                    win <= 0;
+
+                // Calculate lose signal
+                if (enemy_v >= 10'd475)
+                    lose <= 1;
+                else
+                    lose <= 0;
+            end
     end
 
 endmodule

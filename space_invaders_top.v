@@ -272,9 +272,9 @@ module space_invaders_top
 	assign {Ca, Cb, Cc, Cd, Ce, Cf, Cg, Dp} = {SSD_CATHODES};
 
     // Assign output of collisions to LEDs
-    assign Led0 = collision;
-    assign Led1 = enemy1_hit;
-    assign Led2 = enemy2_hit;
-    assign Led3 = enemy3_hit;
+    assign Ld0 = collision;
+    assign Ld1 = enemy1_hit;
+    assign Ld2 = enemy2_hit;
+    assign Ld3 = enemy3_hit;
 
 endmodule

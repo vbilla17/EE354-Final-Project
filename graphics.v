@@ -49,13 +49,13 @@ module Graphics (
     wire [9:0] start_v, start_h;
 
     assign win_v = 10'd275;
-    assign win_h = 10'd425;
+    assign win_h = 10'd325;
     assign lose_v = 10'd275;
-    assign lose_h = 10'd425;
+    assign lose_h = 10'd325;
     assign continue_v = 10'd425;
-    assign continue_h = 10'd225;
+    assign continue_h = 10'd300;
     assign start_v = 10'd275;
-    assign start_h = 10'd425;
+    assign start_h = 10'd375;
 
     // Set values for other two enemies
     reg [9:0] enemy2_h;
