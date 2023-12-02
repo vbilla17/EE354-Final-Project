@@ -19,7 +19,7 @@ reg [2:0] state;
 // Logic
 always @(posedge clk, posedge reset)
 begin
-    if (reset)
+    if (reset || start)
     begin
         state <= INIT;
     end
@@ -27,7 +27,11 @@ begin
     begin
         case (state)
             INIT:
-                hit <= 0;
+                begin
+                    hit <= 0;
+                    if (start)
+                        state <= IDLE;
+                end
             IDLE:
                 begin
                     hit <= 0;

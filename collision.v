@@ -3,6 +3,7 @@ module Collisions
     input clk,
     input reset,
     input start,
+    input playing,
     input [9:0] enemy_h,
     input [9:0] enemy_v,
     input [9:0] projectile_h,
@@ -34,24 +35,24 @@ module Collisions
     // Check for collisions
     always @(projectile_h, projectile_v, enemy_h, enemy_v, enemy2_h, enemy3_h)
     begin
-        if (projectile_h >= enemy_h - 10'd50 && projectile_h <= enemy_h + 10'd50)
-            if (projectile_v >= enemy_v - 10'd50 && projectile_v <= enemy_v + 10'd50)
+        if (projectile_h >= enemy_h - 10'd25 && projectile_h <= enemy_h + 10'd25)
+            if (projectile_v >= enemy_v - 10'd25 && projectile_v <= enemy_v + 10'd25)
                 enemy1_hit_current <= 1;
             else
                 enemy1_hit_current <= 0;
         else
             enemy1_hit_current <= 0;
 
-        if (projectile_h >= enemy2_h - 10'd50 && projectile_h <= enemy2_h + 10'd50)
-            if (projectile_v >= enemy_v - 10'd50 && projectile_v <= enemy_v + 10'd50)
+        if (projectile_h >= enemy2_h - 10'd25 && projectile_h <= enemy2_h + 10'd25)
+            if (projectile_v >= enemy_v - 10'd25 && projectile_v <= enemy_v + 10'd25)
                 enemy2_hit_current <= 1;
             else
                 enemy2_hit_current <= 0;
         else
             enemy2_hit_current <= 0;
 
-        if (projectile_h >= enemy3_h - 10'd50 && projectile_h <= enemy3_h + 10'd50)
-            if (projectile_v >= enemy_v - 10'd50 && projectile_v <= enemy_v + 10'd50)
+        if (projectile_h >= enemy3_h - 10'd25 && projectile_h <= enemy3_h + 10'd25)
+            if (projectile_v >= enemy_v - 10'd25 && projectile_v <= enemy_v + 10'd25)
                 enemy3_hit_current <= 1;
             else
                 enemy3_hit_current <= 0;
@@ -65,9 +66,9 @@ module Collisions
     reg prev_enemy3_hit;
 
     // Calculate collision, win, and lose signals
-    always @(posedge clk or posedge reset or posedge start)
+    always @(posedge clk)
     begin
-        if (reset || start)
+        if (~playing)
             begin
                 collision <= 0;
                 prev_enemy1_hit <= 0;

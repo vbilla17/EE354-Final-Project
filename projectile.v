@@ -21,7 +21,7 @@ localparam IDLE       = 4'b0001,
 reg [3:0] state;
 
 // Slow counter for projectile movement
-reg [24:0] counter;
+reg [22:0] counter;
 always @(posedge clk, posedge reset)
 begin
     if (reset)

@@ -11,16 +11,17 @@ module EnemyFleet (
 );
 
 // Internal signals
-reg [4:0] state;
-reg [26:0] counter;
+reg [5:0] state;
+reg [25:0] counter;
 reg moving_right;
 
 // 1-hot state encoding
-localparam INIT       = 5'b00001,
-            IDLE       = 5'b00010,
-            MOVE_RIGHT = 5'b00100,
-            MOVE_LEFT  = 5'b01000,
-            MOVE_DOWN  = 5'b10000;
+localparam INIT        = 6'b000001,
+            IDLE       = 6'b000010,
+            MOVE_RIGHT = 6'b000100,
+            MOVE_LEFT  = 6'b001000,
+            MOVE_DOWN  = 6'b010000,
+            GAME_OVER  = 6'b100000;
 
 // Counter for enemy fleet movement
 always @(posedge clk or posedge reset)
@@ -65,6 +66,8 @@ begin
                         moving_right <= 1;
                         state <= MOVE_DOWN;
                     end
+                    if (enemy_v >= 10'd450)
+                        state <= GAME_OVER;
                 end
             MOVE_RIGHT:
                 begin
@@ -81,6 +84,15 @@ begin
                     enemy_v <= enemy_v + 10'd50;
                     state <= IDLE;
                 end
+            GAME_OVER:
+                begin
+                    enemy_h <= 10'd175;
+                    enemy_v <= 10'd65;
+                    moving_right <= 1;
+                    if (playing)
+                        state <= IDLE;
+                end
+
         endcase
     end
 end

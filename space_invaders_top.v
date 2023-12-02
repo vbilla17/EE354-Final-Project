@@ -113,6 +113,7 @@ module space_invaders_top
             .clk(ClkPort),
             .reset(reset),
             .start(game_start),
+            .playing(game_playing),
             .enemy_h(enemy_h),
             .enemy_v(enemy_v),
             .projectile_h(projectile_h),
@@ -200,8 +201,8 @@ module space_invaders_top
 	//SSDs display 
 	//to show how we can interface our "game" module with the SSD's, we output the 12-bit rgb background value to the SSD's
 	assign SSD3 = BtnL_SCEN_counter;
-	assign SSD2 = BtnC_SCEN_counter;
-	assign SSD1 = BtnR_SCEN_counter;
+	assign SSD2 = lose;
+	assign SSD1 = win;
 	assign SSD0 = {game_lose, game_win, game_playing, game_start};
 
 
